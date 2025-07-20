@@ -50,8 +50,12 @@ DIGITAL_APPS = [
     "monitoring",
     "province",
     "gallery",
+    "address",
+    "brand",
+    "store",
+    "discount",
     # "wallet",
-    # "siteinfo",
+    "siteinfo",
     # "zarinpal.apps.ZarinpalConfig",
 ]
 
@@ -66,6 +70,7 @@ THIRD_PARTY_APPS = [
     "django_jalali",
     "jalali_date",
     "taggit",
+    "djmoney",
 ]
 
 INSTALLED_APPS = (

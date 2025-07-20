@@ -31,6 +31,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("account/", include("account.urls")),
     path("blog/", include("blog.urls")),
+    path("siteinfo/", include("siteinfo.urls")),
+    path("brand/", include("brand.urls")),
+    path("address/", include("address.urls")),
+    path("store/", include("store.urls")),
+    path("discount/", include("discount.urls")),
 ]
 
 if settings.DEBUG:
