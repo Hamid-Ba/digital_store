@@ -36,6 +36,7 @@ urlpatterns = [
     path("address/", include("address.urls")),
     path("store/", include("store.urls")),
     path("discount/", include("discount.urls")),
+    # path("payment/", include("zarinpal.urls")),
 ]
 
 if settings.DEBUG:

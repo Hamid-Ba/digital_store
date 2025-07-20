@@ -56,7 +56,7 @@ DIGITAL_APPS = [
     "discount",
     # "wallet",
     "siteinfo",
-    # "zarinpal.apps.ZarinpalConfig",
+    "zarinpal.apps.ZarinpalConfig",
 ]
 
 THIRD_PARTY_APPS = [
