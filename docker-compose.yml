@@ -1,0 +1,107 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data:Z
+    networks:
+      - digital_back
+
+  redis:
+    restart: unless-stopped
+    image: redis:7.4.0-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    expose:
+      - "6379"
+    environment:
+      - TZ=Asia/Tehran
+    networks:
+      - digital_back
+
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate --no-input &&
+       python manage.py collectstatic --no-input &&
+       gunicorn --bind 0.0.0.0:8000 --forwarded-allow-ips='*' --access-logfile - --workers 3 --timeout 120 config.wsgi:application"
+    volumes:
+      - /home/digital_back/static:/home/app/digital/static/
+      - /home/digital_back/media:/home/app/digital/media/
+      - .:/home/app/digital
+    labels:
+      co.elastic.logs/enabled: "true"
+      filebeat_log: "true"
+    ports:
+      - 127.0.0.1:8000:8000
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Tehran
+    restart: unless-stopped
+    networks:
+      - digital_back
+
+  celery_worker:
+    build: .
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - /home/digital_back/static:/home/app/digital/static/
+      - /home/digital_back/media:/home/app/digital/media/
+      - .:/home/app/digital
+    labels:
+      co.elastic.logs/enabled: "true"
+      filebeat_log: "true"
+    depends_on:
+      - redis
+      - web
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Tehran
+    restart: unless-stopped
+    networks:
+      - digital_back
+
+  celery_beat:
+    build: .
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    labels:
+      co.elastic.logs/enabled: "true"
+      filebeat_log: "true"
+    depends_on:
+      - celery_worker
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Tehran
+    restart: unless-stopped
+    networks:
+      - digital_back
+  
+  flower:
+    build: .
+    command: celery -A config flower --port=5555 --basic_auth="digital:digital" 
+    ports:
+      - 5555:5555
+    depends_on:
+      - celery_worker
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Tehran
+    restart: unless-stopped
+    networks:
+      - digital_back
+
+networks:
+  digital_back:
