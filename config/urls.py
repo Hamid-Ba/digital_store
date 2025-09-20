@@ -24,11 +24,12 @@ from django.urls import path, include
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(
-        "api/docs/",
+        "api/schema/swagger-ui/",
         SpectacularSwaggerView.as_view(url_name="api-schema"),
-        name="api-docs",
+        name="swagger-ui",
     ),
     path("admin/", admin.site.urls),
+    path("api/", include("common.urls")),
     path("account/", include("account.urls")),
     path("blog/", include("blog.urls")),
     path("siteinfo/", include("siteinfo.urls")),
@@ -36,7 +37,7 @@ urlpatterns = [
     path("address/", include("address.urls")),
     path("store/", include("store.urls")),
     path("discount/", include("discount.urls")),
-    # path("payment/", include("zarinpal.urls")),
+    path("payment/", include("zarinpal.urls")),
 ]
 
 if settings.DEBUG:

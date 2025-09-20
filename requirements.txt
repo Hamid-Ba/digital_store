@@ -26,6 +26,8 @@ attrs==25.3.0
     #   jsonschema
     #   referencing
     #   zeep
+babel==2.17.0
+    # via py-moneyed
 billiard==4.2.1
     # via celery
 black==22.12.0
@@ -69,7 +71,10 @@ django==4.2.23
     #   django-cors-headers
     #   django-filter
     #   django-jalali
+    #   django-jalali-date
     #   django-js-asset
+    #   django-money
+    #   django-redis
     #   django-taggit
     #   django-timezone-field
     #   djangorestframework
@@ -86,8 +91,14 @@ django-filter==24.3
     # via -r requirements.ini
 django-jalali==7.3.0
     # via -r requirements.ini
+django-jalali-date==1.0.2
+    # via -r requirements.ini
 django-js-asset==3.1.2
     # via django-ckeditor
+django-money==3.5.4
+    # via -r requirements.ini
+django-redis==6.0.0
+    # via -r requirements.ini
 django-taggit==3.1.0
     # via -r requirements.ini
 django-timezone-field==7.1
@@ -124,7 +135,9 @@ isodate==0.7.2
 jalali-core==1.0.0
     # via jdatetime
 jdatetime==5.2.0
-    # via django-jalali
+    # via
+    #   django-jalali
+    #   django-jalali-date
 jsonschema==4.25.0
     # via drf-spectacular
 jsonschema-specifications==2025.4.1
@@ -151,7 +164,7 @@ packaging==25.0
     #   kombu
 pathspec==0.12.1
     # via black
-pillow
+pillow==9.5.0
     # via -r requirements.ini
 platformdirs==4.3.8
     # via black
@@ -169,6 +182,8 @@ psycopg[binary]==3.2.5
     # via -r requirements.ini
 psycopg-binary==3.2.5
     # via psycopg
+py-moneyed==3.0
+    # via django-money
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
 python-crontab==3.3.0
@@ -186,7 +201,9 @@ pytz==2025.2
 pyyaml==6.0.2
     # via drf-spectacular
 redis==4.6.0
-    # via -r requirements.ini
+    # via
+    #   -r requirements.ini
+    #   django-redis
 referencing==0.36.2
     # via
     #   jsonschema
@@ -221,6 +238,7 @@ typing-extensions==4.14.1
     #   dj-database-url
     #   multidict
     #   psycopg
+    #   py-moneyed
     #   referencing
 tzdata==2025.2
     # via
@@ -243,3 +261,6 @@ yarl==1.20.1
     # via aiohttp
 zeep==3.4.0
     # via -r requirements.ini
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

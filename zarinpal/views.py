@@ -14,7 +14,17 @@ from .zp import Zarinpal, ZarinpalError
 from .serializers import PaymentSerializer
 from store.services import order_services
 
-zarin_pal = Zarinpal(settings.MERCHANT_ID, settings.VERIFY_URL, sandbox=True)
+# Initialize Zarinpal with error handling for development
+try:
+    zarin_pal = Zarinpal(settings.MERCHANT_ID, settings.VERIFY_URL, sandbox=True)
+except Exception as e:
+    # In development, if Zarinpal service is not available, create a dummy object
+    import logging
+
+    logging.warning(
+        f"ZarinPal initialization failed: {e}. Using dummy instance for development."
+    )
+    zarin_pal = None
 FRONT_VERIFY = settings.FRONT_VERIFY
 order_service = order_services.OrderServices()
 
@@ -37,6 +47,15 @@ class PlaceOrderView(APIView):
         order = get_object_or_404(Order, id=order_id)
         desc = f"سفارش {str(order)}"
         try:
+            # Check if ZarinPal is available
+            if zarin_pal is None:
+                return Response(
+                    {
+                        "detail": "Payment service is currently unavailable in development mode"
+                    },
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+
             # try to create payment if success get url to redirect it
             redirect_url = zarin_pal.payment_request(
                 int(order.total_price.amount), desc, mobile=user.phone, email=None
@@ -83,6 +102,10 @@ class VerifyOrderView(APIView):
                 order_service.delete_order(payment.order.id)
             return redirect(FRONT_VERIFY + "?status=CANCELLED")
         try:
+            # Check if ZarinPal is available
+            if zarin_pal is None:
+                return redirect(FRONT_VERIFY + "?status=NOK&error=SERVICE_UNAVAILABLE")
+
             code, message, ref_id = zarin_pal.payment_verification(
                 int(payment.pay_amount.amount), authority
             )
